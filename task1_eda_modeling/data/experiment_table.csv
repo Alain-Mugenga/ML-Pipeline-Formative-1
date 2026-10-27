@@ -1,0 +1,10 @@
+Experiment,Model,Features,Best hyperparameters,CV RMSE (train),Test RMSE,Test MAE,Test R2,Tuning time (s)
+E0a Persistence,Rule (no training),lag_1,-,,0.6190885316531559,0.4075897693054722,0.37218374917796637,
+E0b Seasonal naive (24h),Rule (no training),lag_24,-,,0.8183069328631782,0.5537995032104243,-0.0968809561063686,
+E0c Seasonal naive (168h),Rule (no training),lag_168,-,,0.8154213125740856,0.5543166662183919,-0.0891586673739937,
+E1 Ridge (tuned),Ridge regression,All 30 features,{'ridge__alpha': 100},0.5756304986865521,0.5181712205254796,0.36903048690573736,0.5601813796013212,0.4690372943878174
+E2 Random Forest (tuned),RandomForestRegressor,All 30 features,"{'n_estimators': 200, 'min_samples_leaf': 3, 'max_features': 0.3, 'max_depth': 12}",0.5281867333995134,0.46457857490871246,0.3141437400961769,0.6464544379476562,447.5739076137543
+E3 HistGradientBoosting (tuned),HistGradientBoostingRegressor,All 30 features,"{'l2_regularization': 0.1, 'learning_rate': 0.0265, 'max_depth': None, 'max_iter': 200, 'max_leaf_nodes': 31, 'min_samples_leaf': 100}",0.5262329975010063,0.4634045700786433,0.3158414325664315,0.6482390219972689,96.5670120716095
+E4a Lags + calendar only,HistGradientBoosting (E3 params),18 features,same as E3,,0.48406118871394577,0.3346230580441515,0.6161800353694395,1.1264386177062988
+E4b + moving averages (no other sensors),HistGradientBoosting (E3 params),23 features,same as E3,,0.483160905243036,0.3321903162745903,0.6176064064341775,1.3258743286132812
+E4c Without calendar features,HistGradientBoosting (E3 params),20 features,same as E3,,0.4825177705486133,0.32976039614671276,0.6186237358802409,1.267935037612915

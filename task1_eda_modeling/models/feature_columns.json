@@ -1,0 +1,42 @@
+{
+  "features": [
+    "lag_1",
+    "lag_2",
+    "lag_3",
+    "lag_6",
+    "lag_12",
+    "lag_24",
+    "lag_48",
+    "lag_168",
+    "roll_mean_3",
+    "roll_mean_6",
+    "roll_mean_24",
+    "roll_mean_168",
+    "roll_std_24",
+    "Global_reactive_power_lag1",
+    "Voltage_lag1",
+    "Global_intensity_lag1",
+    "Sub_metering_1_lag1",
+    "Sub_metering_2_lag1",
+    "Sub_metering_3_lag1",
+    "Sub_metering_4_lag1",
+    "hour",
+    "dayofweek",
+    "month",
+    "is_weekend",
+    "hour_sin",
+    "hour_cos",
+    "dow_sin",
+    "dow_cos",
+    "month_sin",
+    "month_cos"
+  ],
+  "target": "Global_active_power",
+  "model": "E3 HistGradientBoosting (tuned)",
+  "train_end": "2009-12-31",
+  "test_metrics": {
+    "RMSE": 0.4634045700786433,
+    "MAE": 0.3158414325664315,
+    "R2": 0.6482390219972689
+  }
+}
