@@ -1,0 +1,5 @@
+task1_eda_modeling/data/household_power_consumption.txt
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+.DS_Store
