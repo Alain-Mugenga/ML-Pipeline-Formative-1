@@ -11,3 +11,5 @@ __pycache__/
 
 # Ignore Windows metadata
 *:Zone.Identifier
+.vscode/
+__pycache__/
