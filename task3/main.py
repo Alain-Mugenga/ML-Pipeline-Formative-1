@@ -1,8 +1,11 @@
 from fastapi import FastAPI
 
+import routes_sql
 from database import get_mysql_connection
 
 app = FastAPI(title="Electricity Time-Series API")
+
+app.include_router(routes_sql.router)
 
 
 @app.get("/")
