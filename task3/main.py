@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 import routes_sql
-from database import get_mysql_connection
+from database import get_mysql_connection, mongo_readings
 
 app = FastAPI(title="Electricity Time-Series API")
 
@@ -23,3 +23,9 @@ def health_mysql():
         return {"mysql": "connected", "power_readings": count}
     finally:
         conn.close()
+
+
+@app.get("/health/mongo")
+def health_mongo():
+    count = mongo_readings.count_documents({})
+    return {"mongodb": "connected", "power_readings": count}
