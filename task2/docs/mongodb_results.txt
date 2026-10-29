@@ -3,14 +3,14 @@ Connected to MongoDB Atlas successfully!
 ======================================
 QUERY 1: LATEST ELECTRICITY READING
 ======================================
-{'global_active_power': 2.988,
- 'global_intensity': 12.8,
- 'global_reactive_power': 0.686,
- 'recorded_at': datetime.datetime(2006, 12, 23, 16, 5),
+{'global_active_power': 2.172,
+ 'global_intensity': 9.2,
+ 'global_reactive_power': 0.514,
+ 'recorded_at': datetime.datetime(2006, 12, 30, 14, 47),
  'submeters': {'sub_metering_1': 0.0,
                'sub_metering_2': 0.0,
                'sub_metering_3': 18.0},
- 'voltage': 242.07}
+ 'voltage': 240.98}
 
 ======================================
 QUERY 2: RECORDS BY DATE RANGE
@@ -80,9 +80,30 @@ QUERY 3: DAILY AVERAGE ACTIVE POWER
 {'average_active_power_kw': 1.626,
  'reading_date': '2006-12-22',
  'total_readings': 1440}
-{'average_active_power_kw': 2.784,
+{'average_active_power_kw': 3.315,
  'reading_date': '2006-12-23',
- 'total_readings': 966}
+ 'total_readings': 1440}
+{'average_active_power_kw': 1.771,
+ 'reading_date': '2006-12-24',
+ 'total_readings': 1440}
+{'average_active_power_kw': 1.905,
+ 'reading_date': '2006-12-25',
+ 'total_readings': 1440}
+{'average_active_power_kw': 2.732,
+ 'reading_date': '2006-12-26',
+ 'total_readings': 1440}
+{'average_active_power_kw': 1.062,
+ 'reading_date': '2006-12-27',
+ 'total_readings': 1440}
+{'average_active_power_kw': 1.439,
+ 'reading_date': '2006-12-28',
+ 'total_readings': 1440}
+{'average_active_power_kw': 2.204,
+ 'reading_date': '2006-12-29',
+ 'total_readings': 1440}
+{'average_active_power_kw': 1.549,
+ 'reading_date': '2006-12-30',
+ 'total_readings': 886}
 
 All three MongoDB queries completed!
 MongoDB connection closed.

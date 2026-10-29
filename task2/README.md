@@ -12,7 +12,7 @@ The dataset contains minute-level household electricity consumption measurements
 
 The measurements include global active power, global reactive power, voltage, global intensity, and three submeter readings.
 
-For the initial database implementation, 10,000 valid records were selected from the original dataset. Two incomplete records were skipped while preparing this subset.
+For the initial database implementation, 20,000 valid records were selected from the original dataset. Two incomplete records were skipped while preparing this subset.
 
 The same prepared dataset was imported into MySQL and MongoDB to allow consistent querying and comparison.
 
@@ -87,9 +87,9 @@ SQL queries: `sql/queries.sql`
 
 The database was successfully populated with:
 
-* 10,000 power readings
+* 20,000 power readings
 * 3 submeter types
-* 30,000 submeter readings
+* 60,000 submeter readings
 
 A JOIN query confirmed that the relationships between all three tables work correctly.
 
@@ -138,7 +138,7 @@ Data import script: `scripts/load_mongodb.py`
 
 MongoDB query script: `scripts/queries_mongodb.py`
 
-The MongoDB collection was successfully populated with 10,000 electricity consumption documents.
+The MongoDB collection was successfully populated with 20,000 electricity consumption documents.
 
 ## 4. Database Queries
 
@@ -174,7 +174,7 @@ The queries were executed successfully, and the results were consistent across b
 | Relationships   | Primary and foreign keys | Embedded fields                 |
 | Query approach  | SQL                      | MongoDB queries and aggregation |
 | Timestamp field | DATETIME                 | BSON Date                       |
-| Data imported   | 10,000 power readings    | 10,000 documents                |
+| Data imported   | 20,000 power readings    | 20,000 documents                |
 
 Both databases support the required time-series retrieval and aggregation operations.
 
@@ -290,7 +290,7 @@ The required historical sequence length and final sampling frequency must be con
 
 ## 8. Implementation Scope
 
-The database implementation and demonstrated queries use 10,000 valid records from the selected Kaggle dataset.
+The database implementation and demonstrated queries use 20,000 valid records from the selected Kaggle dataset.
 
 The two databases use equivalent measurement data, and their analytical query results have been verified to agree.
 
