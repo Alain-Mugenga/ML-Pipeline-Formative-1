@@ -83,7 +83,7 @@ def load_history():
 def main():
     try:
         hourly = load_history()
-    except requests.exceptions.RequestException as err:
+    except (requests.exceptions.RequestException, RuntimeError) as err:
         sys.exit(f"Could not get data from the API at {API_URL}: {err}")
     print(f"Fetched {len(hourly)} hourly rows: {hourly.index[0]} to {hourly.index[-1]}")
 
@@ -91,13 +91,19 @@ def main():
 
     with open(FEATURES_PATH) as f:
         expected = json.load(f)["features"]
-    assert list(X.columns) == expected, "Feature mismatch with training"
-    assert not X.isna().any().any(), "NaNs in features (not enough history?)"
+    if list(X.columns) != expected:
+        sys.exit("Feature mismatch: columns differ from the ones the model was trained on")
+    if X.isna().any().any():
+        sys.exit("Not enough history to build all features (need 168+ hourly rows)")
 
-    model = joblib.load(MODEL_PATH)
+    try:
+        model = joblib.load(MODEL_PATH)
+    except FileNotFoundError:
+        sys.exit(f"Model file not found: {MODEL_PATH}")
+
     prediction = model.predict(X)[0]
     print(f"Forecast for {X.index[0]}: {prediction:.3f} kW")
-
+    
 
 if __name__ == "__main__":
     main()
