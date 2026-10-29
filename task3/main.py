@@ -1,11 +1,13 @@
 from fastapi import FastAPI
 
+import routes_mongo
 import routes_sql
 from database import get_mysql_connection, mongo_readings
 
 app = FastAPI(title="Electricity Time-Series API")
 
 app.include_router(routes_sql.router)
+app.include_router(routes_mongo.router)
 
 
 @app.get("/")
