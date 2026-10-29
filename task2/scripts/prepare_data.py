@@ -13,7 +13,7 @@ input_file = DATA_DIR / "household_power_consumption.txt"
 output_file = DATA_DIR / "cleaned_readings.csv"
 
 # Number of valid records for initial database testing
-MAX_ROWS = 10000
+MAX_ROWS = 20000
 
 # Original measurement columns
 measurement_columns = [
