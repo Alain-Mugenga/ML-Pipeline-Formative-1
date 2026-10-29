@@ -49,7 +49,6 @@ def parse_id(reading_id: str) -> ObjectId:
     return ObjectId(reading_id)
 
 
-# --- Time-series endpoints (fixed paths: keep these above /readings/{reading_id}) ---
 
 
 @router.get("/readings/latest", response_model=Reading)
@@ -65,7 +64,7 @@ def get_latest_reading():
 def get_readings_by_date_range(
     start: datetime,
     end: datetime,
-    limit: int = Query(1000, ge=1, le=10000),
+    limit: int = Query(20000, ge=1, le=50000),
 ):
     """Readings with start <= recorded_at <= end, oldest first."""
     start, end = to_naive_utc(start), to_naive_utc(end)
