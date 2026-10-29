@@ -80,4 +80,4 @@ In MySQL, a reading is split across two tables: the main values in `power_readin
 
 ## Data
 
-The data is 10,000 minute-by-minute readings from the household electric power consumption dataset, covering December 16 to 23, 2006.
+The data is 20,000 minute-by-minute readings from the household electric power consumption dataset, covering 16 to 30 December 2006.
