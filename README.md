@@ -1,43 +1,124 @@
-# Household Power Consumption: EDA and Forecasting
+# Time Series Pipeline: Household Power Consumption Forecasting
 
-This project explores the Individual Household Electric Power Consumption dataset and builds a model to forecast household electricity demand one hour ahead.
+ALU group assignment (Time Series Pipeline). We forecast the next hour of household electricity use, store the data in MySQL and MongoDB, expose it through a REST API, and run a prediction script that ties everything together.
 
-## Objective
+## Problem and dataset
 
-Predict the hourly mean of `Global_active_power` (kW) using historical consumption, sensor readings, and calendar features. The notebook examines missing data, demand patterns, seasonality, lag relationships, and model performance.
+**Goal:** predict `Global_active_power` (kW) for the next hour.
 
-## Dataset
+**Dataset:** [Individual Household Electric Power Consumption](https://www.kaggle.com/datasets/uciml/electric-power-consumption-data-set/data) (Kaggle / UCI Machine Learning Repository). It has a clear timestamp, a numeric target and several measured variables (reactive power, voltage, current intensity and three sub-meters), which is what the assignment requires. Household load forecasting is a practical problem for demand planning and for spotting wasted energy.
 
-The data contains household electricity measurements recorded every minute from December 2006 to November 2010. It includes active and reactive power, voltage, current intensity, and three sub-metering measurements.
+- Raw data: one reading per minute, December 2006 to November 2010
+- Modelled at hourly resolution (34,589 hourly rows after cleaning)
+- Missing values: short gaps (6 hours or less) are interpolated; longer gaps use the same hour from the previous week
 
-The dataset is from the [UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption). The raw data file is included at `data/household_power_consumption.txt`.
+## Team
 
-## Project contents
+| Member | Task | Main components |
+|---|---|---|
+| Nina Cyndy Bwiza | Task 1 | EDA, analytical questions, preprocessing, model and experiments |
+| Alain Christian Mugenga | Task 2 | MySQL schema and ERD, MongoDB design, queries |
+| Nazira Umucyo | Task 3 | FastAPI CRUD, latest and date-range endpoints for MySQL and MongoDB |
+| Sandrine Umugwaneza | Task 4 | Forecast script: API fetch, preprocessing, model loading, prediction |
 
-- `Task1_Time_Series_EDA_and_Modeling.ipynb` — exploratory analysis, preprocessing, feature engineering, model experiments, and evaluation.
-- `preprocessing.py` — reusable data-loading, cleaning, hourly aggregation, and feature-building functions.
-- `data/household_power_consumption.txt` — raw minute-level data.
-- `data/hourly_clean.csv` — processed hourly data.
-- `data/experiment_table.csv` — model experiment results.
-- `figures/` — plots produced during the analysis.
-- `models/best_model.joblib` — saved best-performing model.
-- `models/feature_columns.json` — model feature names, target, and test metrics.
+## Repository structure
 
-## Preprocessing and modeling
+```
+.
+├── task1_eda_modeling/   EDA notebook, preprocessing.py, figures, trained model
+├── task2/                SQL schema, ERD, MongoDB scripts, query results
+├── task3/                FastAPI application (/sql and /mongo endpoints)
+├── task4/                Forecast script
+├── requirements.txt
+└── README.md
+```
 
-The notebook parses the date and time into a datetime index, treats `?` as missing data, and aggregates the minute readings into hourly means. Short missing gaps are interpolated; longer gaps are filled using the same hour from the previous week, with fallback filling for remaining values.
+## How the pieces connect
 
-The forecasting features include past demand lags, rolling statistics, previous-hour sensor readings, and calendar features. The data is split chronologically: training through December 2009 and testing on 2010. Models are compared using time-series cross-validation and held-out test metrics. The final model is selected by cross-validation RMSE on the training period.
+```
+Raw minute data -> MySQL + MongoDB (Task 2) -> REST API (Task 3)
+                                                    |
+        Task 1 preprocessing + trained model  ->  Task 4 forecast script -> next-hour forecast
+```
 
-## Results
+## Model results (Task 1)
 
-The selected HistGradientBoosting model achieved a test RMSE of **0.463 kW**, MAE of **0.316 kW**, and R² of **0.65**. Compared with the persistence baseline, it reduced RMSE by about 25%.
+One-step-ahead forecast on a held-out test period (training ends 2009-12-31).
 
-The model captures typical demand patterns but tends to under-predict sudden high-demand peaks, particularly in the evening.
+| Experiment | Test RMSE | Test MAE | Test R² |
+|---|---|---|---|
+| Persistence (previous hour) | 0.619 | 0.408 | 0.372 |
+| Ridge (tuned) | 0.518 | 0.369 | 0.560 |
+| Random Forest (tuned) | 0.465 | 0.314 | 0.647 |
+| **HistGradientBoosting (tuned)** | **0.463** | **0.315** | **0.649** |
 
-## Run the notebook
+The final model uses 30 features: lagged values (1 to 168 hours), moving averages, other sensors from the previous hour and calendar features. The full experiment table is in `task1_eda_modeling/data/experiment_table.csv`.
 
-Run Jupyter from this project directory so the notebook can find the relative `data/`, `figures/`, and `models/` paths. Install the required Python packages if they are not already available:
+## Databases (Task 2)
 
-```bash
-pip install numpy pandas matplotlib seaborn statsmodels scikit-learn scipy joblib jupyter
+- **MySQL** (`electricity_task2`): 3 tables, `power_readings`, `submeters` and `submeter_readings` (20,000 power readings, 60,000 submeter readings). ERD: `task2/docs/erd.png`.
+- **MongoDB** (`electricity_task2`, collection `power_readings`): one document per reading, with the three sub-meter values embedded.
+- Each database has three queries (latest reading, date range, average daily power). Results are in `task2/docs/`.
+
+## API (Task 3)
+
+FastAPI application with the same endpoints under `/sql` and `/mongo`:
+
+| Method | Path | What it does |
+|---|---|---|
+| POST | `/readings` | Add a reading |
+| GET | `/readings` | List readings, oldest first |
+| GET | `/readings/{id}` | Get one reading |
+| PUT | `/readings/{id}` | Update a reading |
+| DELETE | `/readings/{id}` | Delete a reading |
+| GET | `/readings/latest` | Most recent reading |
+| GET | `/readings/range?start=...&end=...` | Readings between two dates |
+
+## Forecast script (Task 4)
+
+`task4/forecast.py` fetches the last 200 hours of minute readings from the API, converts them to hourly data with Task 1's preprocessing, builds the 30 features, loads the trained model and prints the forecast for the next hour. Example output:
+
+```
+Fetched 200 hourly rows: 2006-12-22 06:00:00 to 2006-12-30 13:00:00
+Forecast for 2006-12-30 14:00:00: 2.185 kW
+```
+
+## How to run
+
+Tested with Python 3.14. From the repository root:
+
+```powershell
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+1. **Task 1:** download `household_power_consumption.txt` from Kaggle into `task1_eda_modeling/data/`, then open `task1_eda_modeling/Task1_Time_Series_EDA_and_Modeling.ipynb` (from inside `task1_eda_modeling/`) and run all cells. The cleaned hourly data is in `task1_eda_modeling/data/hourly_clean.csv`.
+2. **Task 2:** see `task2/README.md`. In short: run `pip install -r task2/requirements.txt`, download `household_power_consumption.txt` from Kaggle into `task2/data/`, run `python task2/scripts/prepare_data.py`, create the MySQL database with `task2/sql/schema.sql`, put `MONGO_URI` in `task2/.env`, then run `load_mysql.py` and `load_mongodb.py`.
+3. **Task 3:** see `task3/README.md`. Create a `.env` file inside `task3/` with your database settings (never commit it), then start the API:
+   ```powershell
+   pip install fastapi uvicorn pymongo python-dotenv mysql-connector-python
+   cd task3
+   python -m uvicorn main:app --reload
+   ```
+   Interactive docs are at `http://127.0.0.1:8000/docs`.
+4. **Task 4:** with the API running, from the repository root:
+   ```powershell
+   pip install -r task4/requirements.txt
+   python task4/forecast.py
+   ```
+   To use a different API address, set the `API_URL` environment variable (default: `http://127.0.0.1:8000/mongo`). See `task4/README.md`.
+
+## Security
+
+Database credentials live in `.env` files, which are ignored by Git. Never commit them.
+
+## Known limitations
+
+- The databases hold the first 20,000 minute readings (16 to 30 December 2006), so the forecast demo predicts for 30 December 2006. This date falls inside the model's training period (training ends 2009-12-31), so the demo shows the pipeline working end to end, not out-of-sample accuracy. Out-of-sample accuracy is the test score above (2010 data).
+- Timestamps are stored as UTC in MongoDB. This is a project convention; the dataset does not state a timezone.
+- The model forecasts one hour ahead only. It under-predicts sudden large peaks (hours above 3 kW), because appliance spikes are not visible in the previous hour's data.
+- The model has no holiday features (the household is in France, so national holidays and school breaks may affect demand).
+- The model needs at least 168 hours of history to build all of its features.
+- The model file was saved with scikit-learn 1.9.1; `requirements.txt` pins this version so the model loads correctly.
+- The MySQL endpoints need a local MySQL server. The Task 4 script was tested against the MongoDB (Atlas) endpoints.
