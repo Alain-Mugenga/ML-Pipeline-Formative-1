@@ -1,3 +1,6 @@
+task1_eda_modeling/data/household_power_consumption.txt
+.ipynb_checkpoints/
+.DS_Store
 # Ignore the original and processed Task 2 datasets
 task2/data/*.txt
 task2/data/*.csv
@@ -12,4 +15,3 @@ __pycache__/
 # Ignore Windows metadata
 *:Zone.Identifier
 .vscode/
-__pycache__/
