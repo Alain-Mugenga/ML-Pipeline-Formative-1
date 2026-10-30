@@ -14,12 +14,12 @@ ALU group assignment (Time Series Pipeline). We forecast the next hour of househ
 
 ## Team
 
-
-
-Nina Cyndy Bwiza: Task 1, EDA, analytical questions, preprocessing, model and experiments 
-Alain Christian Mugenga: Task 2, MySQL schema and ERD, MongoDB design, queries 
-Nazira Umucyo: Task 3 FastAPI CRUD, latest and date-range endpoints for MySQL and MongoDB 
-Sandrine Umugwaneza: Task 4,Forecast script: API fetch, preprocessing, model loading, prediction |
+| Member | Task | Main components |
+|---|---|---|
+| Nina Cyndy Bwiza | Task 1 | EDA, analytical questions, preprocessing, model and experiments |
+| Alain Christian Mugenga | Task 2 | MySQL schema and ERD, MongoDB design, queries |
+| Nazira Umucyo | Task 3 | FastAPI CRUD, latest and date-range endpoints for MySQL and MongoDB |
+| Sandrine Umugwaneza | Task 4 | Forecast script: API fetch, preprocessing, model loading, prediction |
 
 ## Repository structure
 
@@ -93,7 +93,7 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-1. **Task 1:** open `task1_eda_modeling/Task1_Time_Series_EDA_and_Modeling.ipynb` and run all cells. The cleaned hourly data is in `task1_eda_modeling/data/hourly_clean.csv`.
+1. **Task 1:** download `household_power_consumption.txt` from Kaggle into `task1_eda_modeling/data/`, then open `task1_eda_modeling/Task1_Time_Series_EDA_and_Modeling.ipynb` (from inside `task1_eda_modeling/`) and run all cells. The cleaned hourly data is in `task1_eda_modeling/data/hourly_clean.csv`.
 2. **Task 2:** see `task2/README.md`. In short: run `pip install -r task2/requirements.txt`, download `household_power_consumption.txt` from Kaggle into `task2/data/`, run `python task2/scripts/prepare_data.py`, create the MySQL database with `task2/sql/schema.sql`, put `MONGO_URI` in `task2/.env`, then run `load_mysql.py` and `load_mongodb.py`.
 3. **Task 3:** see `task3/README.md`. Create a `.env` file inside `task3/` with your database settings (never commit it), then start the API:
    ```powershell
@@ -115,6 +115,10 @@ Database credentials live in `.env` files, which are ignored by Git. Never commi
 
 ## Known limitations
 
-- The databases hold the first 20,000 minute readings (16 to 30 December 2006), so the forecast demo predicts for 30 December 2006.
+- The databases hold the first 20,000 minute readings (16 to 30 December 2006), so the forecast demo predicts for 30 December 2006. This date falls inside the model's training period (training ends 2009-12-31), so the demo shows the pipeline working end to end, not out-of-sample accuracy. Out-of-sample accuracy is the test score above (2010 data).
+- Timestamps are stored as UTC in MongoDB. This is a project convention; the dataset does not state a timezone.
+- The model forecasts one hour ahead only. It under-predicts sudden large peaks (hours above 3 kW), because appliance spikes are not visible in the previous hour's data.
+- The model has no holiday features (the household is in France, so national holidays and school breaks may affect demand).
 - The model needs at least 168 hours of history to build all of its features.
+- The model file was saved with scikit-learn 1.9.1; `requirements.txt` pins this version so the model loads correctly.
 - The MySQL endpoints need a local MySQL server. The Task 4 script was tested against the MongoDB (Atlas) endpoints.
