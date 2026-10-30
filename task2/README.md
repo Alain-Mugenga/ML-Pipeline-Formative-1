@@ -12,7 +12,13 @@ The dataset contains minute-level household electricity consumption measurements
 
 The measurements include global active power, global reactive power, voltage, global intensity, and three submeter readings.
 
-For the initial database implementation, 20,000 valid records were selected from the original dataset. Two incomplete records were skipped while preparing this subset.
+The database implementation uses 20,000 valid minute-level electricity readings selected from the original Kaggle dataset.
+
+The records cover the period from 16 December 2006 at 17:24 to 30 December 2006 at 14:47.
+
+Database verification identified two timestamp gaps containing a total of four missing minutes.
+
+The data preparation script confirmed that four incomplete source records were skipped when generating the 20,000 valid readings.
 
 The same prepared dataset was imported into MySQL and MongoDB to allow consistent querying and comparison.
 
@@ -142,7 +148,7 @@ The MongoDB collection was successfully populated with 20,000 electricity consum
 
 ## 4. Database Queries
 
-Three analytical queries were implemented in both databases.
+Three analytical queries were implemented in both MySQL and MongoDB. An additional hourly aggregation query was implemented in MySQL to demonstrate time-series analysis.
 
 ### Query 1: Latest Electricity Reading
 
@@ -155,6 +161,14 @@ Retrieves measurements recorded within a specified time interval.
 ### Query 3: Average Daily Active Power
 
 Groups electricity measurements by date and calculates the average global active power in kW.
+
+### Query 4: Hourly Average Active Power (MySQL)
+
+Calculates the average global active power for each hourly interval using MySQL's DATE_FORMAT(), AVG(), and GROUP BY functions.
+
+This query demonstrates hourly aggregation of minute-level electricity measurements, which is relevant to the project's time-series forecasting pipeline.
+
+The actual results are saved in docs/mysql_results.txt.
 
 ### Query Results
 
@@ -244,13 +258,16 @@ Database passwords and connection strings must not be committed to GitHub.
 
 ## 7. Integration With Other Tasks
 
+
 ### Task 1: Data Preprocessing and Forecasting
 
-Task 1 must confirm the final cleaned dataset, missing-value treatment, prediction target, and data frequency.
+Task 1's forecasting model uses hourly electricity consumption data with a historical lookback window of 168 hours (7 days).
 
-The current database implementation uses a 10,000-record development subset.
+The Task 2 databases store 20,000 valid minute-level electricity consumption readings. These can be aggregated into hourly measurements to provide the historical data required by the forecasting model.
 
-The final integrated project must use preprocessing and timestamp conventions consistent with Task 1.
+A MySQL hourly aggregation query has been implemented to demonstrate the transformation of minute-level readings into hourly averages.
+
+The prediction pipeline must apply the same preprocessing and feature transformations used during Task 1's model training.
 
 ### Task 3: API Implementation
 
@@ -286,14 +303,24 @@ Important fields include:
 * `voltage`
 * `global_intensity`
 
-The required historical sequence length and final sampling frequency must be confirmed with Task 1.
+Task 1's forecasting model requires 168 hourly observations. Task 4 must retrieve sufficient historical readings through Task 3's API and preprocess them into the same hourly format and feature structure used during model training.
 
 ## 8. Implementation Scope
 
-The database implementation and demonstrated queries use 20,000 valid records from the selected Kaggle dataset.
+## 8. Implementation Scope
 
-The two databases use equivalent measurement data, and their analytical query results have been verified to agree.
+The database implementation uses 20,000 valid minute-level electricity readings from the Kaggle Individual Household Electric Power Consumption dataset.
 
-Timestamps are interpreted as UTC in MongoDB for consistent storage. This is a project convention rather than a verified timezone supplied by the dataset.
+The data preparation process skipped four incomplete records. The resulting database covers 16 December 2006 at 17:24 to 30 December 2006 at 14:47, with two timestamp gaps containing four missing minutes.
 
-Final integration will require alignment with Task 1's preprocessing decisions.
+MySQL contains 20,000 power readings and 60,000 associated submeter readings. MongoDB contains 20,000 electricity documents.
+
+Both databases support latest-record retrieval, date-range filtering, and daily average power calculations. MySQL additionally implements an hourly average power query.
+
+The longest uninterrupted historical period contains 12,883 consecutive minute-level readings (214.72 hours), from 21 December 2006 at 11:25 to 30 December 2006 at 10:07.
+
+Task 1's forecasting model requires 168 hourly observations (7 days). Task 4 has confirmed that its prediction script runs successfully.
+
+MongoDB stores timestamps as UTC according to the project's storage convention, while MySQL uses DATETIME.
+
+Both databases contain equivalent electricity measurements, and their analytical query results have been verified to match.
