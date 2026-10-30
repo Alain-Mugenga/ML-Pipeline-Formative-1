@@ -39,3 +39,28 @@ GROUP BY DATE(recorded_at)
 ORDER BY reading_date ASC;
 
 
+-- QUERY 4: Calculate hourly average active power
+
+SELECT
+    DATE_FORMAT(
+        recorded_at,
+        '%Y-%m-%d %H:00:00'
+    ) AS reading_hour,
+
+    ROUND(
+        AVG(global_active_power),
+        3
+    ) AS average_active_power_kw,
+
+    COUNT(*) AS total_readings
+
+FROM power_readings
+
+GROUP BY DATE_FORMAT(
+    recorded_at,
+    '%Y-%m-%d %H:00:00'
+)
+
+ORDER BY reading_hour ASC
+
+LIMIT 10;

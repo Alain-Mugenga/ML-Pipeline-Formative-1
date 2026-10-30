@@ -1,0 +1,11 @@
+pandas>=2.0
+numpy
+scikit-learn==1.9.1
+scipy
+statsmodels
+matplotlib
+seaborn
+joblib
+nbformat
+nbclient
+ipykernel

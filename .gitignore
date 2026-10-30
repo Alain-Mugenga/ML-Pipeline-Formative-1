@@ -1,15 +1,18 @@
-# Ignore the original and processed Task 2 datasets
+# Datasets (too large for GitHub)
+task1_eda_modeling/data/household_power_consumption.txt
 task2/data/*.txt
 task2/data/*.csv
 
-# Ignore Python temporary files
+# Python and Jupyter
 __pycache__/
+.ipynb_checkpoints/
 .venv/
+venv/
 
-# Ignore database passwords
+# Database passwords
 .env
 
-# Ignore Windows metadata
-*:Zone.Identifier
+# Editor and system files
 .vscode/
-__pycache__/
+.DS_Store
+*:Zone.Identifier
