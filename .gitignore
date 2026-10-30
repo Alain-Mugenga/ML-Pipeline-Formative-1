@@ -1,5 +1,18 @@
+# Datasets (too large for GitHub)
 task1_eda_modeling/data/household_power_consumption.txt
+task2/data/*.txt
+task2/data/*.csv
+
+# Python and Jupyter
 __pycache__/
 .ipynb_checkpoints/
 .venv/
+venv/
+
+# Database passwords
+.env
+
+# Editor and system files
+.vscode/
 .DS_Store
+*:Zone.Identifier
